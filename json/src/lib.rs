@@ -8,17 +8,17 @@
 // If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 //
 
-//! # Rust Client for Bitcoin Core API
+//! # Rust Client for Verge Core API
 //!
-//! This is a client library for the Bitcoin Core JSON-RPC API.
+//! This is a client library for the Verge Core JSON-RPC API.
 //!
 
-#![crate_name = "bitcoincore_rpc_json"]
+#![crate_name = "vergecore_rpc_json"]
 #![crate_type = "rlib"]
 
-extern crate bitcoin;
-extern crate bitcoin_amount;
-extern crate bitcoin_hashes;
+extern crate verge;
+extern crate verge_amount;
+extern crate verge_hashes;
 extern crate hex;
 extern crate num_bigint;
 extern crate secp256k1;
@@ -29,10 +29,10 @@ extern crate serde_json;
 
 use std::str::FromStr;
 
-use bitcoin::consensus::encode;
-use bitcoin::{Address, Script, Transaction};
-use bitcoin_amount::Amount;
-use bitcoin_hashes::sha256d;
+use verge::consensus::encode;
+use verge::{Address, Script, Transaction};
+use verge_amount::Amount;
+use verge_hashes::sha256d;
 use num_bigint::BigUint;
 use secp256k1::PublicKey;
 use serde::de::Error as SerdeError;
@@ -395,7 +395,7 @@ pub struct TestMempoolAccept {
 /// Models the result of "getblockchaininfo"
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetBlockchainInfoResult {
-    // TODO: Use Network from rust-bitcoin
+    // TODO: Use Network from rust-verge
     /// Current network name as defined in BIP70 (main, test, regtest)
     pub chain: String,
     /// The current number of blocks processed in the server
@@ -521,7 +521,7 @@ pub struct GetPeerInfoResult {
 /// Models the result of "estimatesmartfee"
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct EstimateSmartFeeResult {
-    /// Estimate fee rate in BTC/kB.
+    /// Estimate fee rate in XVG/kB.
     pub feerate: Option<Value>,
     /// Errors encountered during processing.
     pub errors: Option<Vec<String>>,
@@ -546,12 +546,12 @@ pub enum EstimateMode {
     Conservative,
 }
 
-/// A wrapper around bitcoin::SigHashType that will be serialized
+/// A wrapper around verge::SigHashType that will be serialized
 /// according to what the RPC expects.
-pub struct SigHashType(bitcoin::SigHashType);
+pub struct SigHashType(verge::SigHashType);
 
-impl From<bitcoin::SigHashType> for SigHashType {
-    fn from(sht: bitcoin::SigHashType) -> SigHashType {
+impl From<verge::SigHashType> for SigHashType {
+    fn from(sht: verge::SigHashType) -> SigHashType {
         SigHashType(sht)
     }
 }
@@ -562,12 +562,12 @@ impl serde::Serialize for SigHashType {
         S: serde::Serializer,
     {
         serializer.serialize_str(match self.0 {
-            bitcoin::SigHashType::All => "ALL",
-            bitcoin::SigHashType::None => "NONE",
-            bitcoin::SigHashType::Single => "SINGLE",
-            bitcoin::SigHashType::AllPlusAnyoneCanPay => "ALL|ANYONECANPAY",
-            bitcoin::SigHashType::NonePlusAnyoneCanPay => "NONE|ANYONECANPAY",
-            bitcoin::SigHashType::SinglePlusAnyoneCanPay => "SINGLE|ANYONECANPAY",
+            verge::SigHashType::All => "ALL",
+            verge::SigHashType::None => "NONE",
+            verge::SigHashType::Single => "SINGLE",
+            verge::SigHashType::AllPlusAnyoneCanPay => "ALL|ANYONECANPAY",
+            verge::SigHashType::NonePlusAnyoneCanPay => "NONE|ANYONECANPAY",
+            verge::SigHashType::SinglePlusAnyoneCanPay => "SINGLE|ANYONECANPAY",
         })
     }
 }
@@ -666,22 +666,22 @@ impl<'a> serde::Serialize for PubKeyOrAddress<'a> {
 
 // Custom deserializer functions.
 
-/// deserialize_amount deserializes a BTC-denominated floating point Bitcoin amount into the
+/// deserialize_amount deserializes a XVG-denominated floating point Verge amount into the
 /// Amount type.
 fn deserialize_amount<'de, D>(deserializer: D) -> Result<Amount, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    Ok(Amount::from_btc(f64::deserialize(deserializer)?))
+    Ok(Amount::from_xvg(f64::deserialize(deserializer)?))
 }
 
-/// deserialize_amount_opt deserializes a BTC-denominated floating point Bitcoin amount into an
+/// deserialize_amount_opt deserializes a XVG-denominated floating point Verge amount into an
 /// Option of the Amount type.
 fn deserialize_amount_opt<'de, D>(deserializer: D) -> Result<Option<Amount>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    Ok(Some(Amount::from_btc(f64::deserialize(deserializer)?)))
+    Ok(Some(Amount::from_xvg(f64::deserialize(deserializer)?)))
 }
 
 fn deserialize_difficulty<'de, D>(deserializer: D) -> Result<BigUint, D::Error>
@@ -717,7 +717,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bitcoin_hashes::hex::FromHex;
+    use verge_hashes::hex::FromHex;
     use serde_json;
 
     macro_rules! hex {
@@ -917,7 +917,7 @@ mod tests {
 
 			}],
 			vout: vec![GetRawTransactionResultVout{
-				value: Amount::from_btc(44.98834461),
+				value: Amount::from_xvg(44.98834461),
 				n: 0,
 				script_pub_key: GetRawTransactionResultVoutScriptPubKey{
 					asm: "OP_DUP OP_HASH160 f602e88b2b5901d8aab15ebe4a97cf92ec6e03b3 OP_EQUALVERIFY OP_CHECKSIG".into(),
@@ -927,7 +927,7 @@ mod tests {
 					addresses: Some(vec![addr!("n3wk1KcFnVibGdqQa6jbwoR8gbVtRbYM4M")]),
 				},
 			}, GetRawTransactionResultVout{
-				value: Amount::from_btc(1.0),
+				value: Amount::from_xvg(1.0),
 				n: 1,
 				script_pub_key: GetRawTransactionResultVoutScriptPubKey{
 					asm: "OP_DUP OP_HASH160 687ffeffe8cf4e4c038da46a9b1d37db385a472d OP_EQUALVERIFY OP_CHECKSIG".into(),
@@ -1010,7 +1010,7 @@ mod tests {
     #[test]
     fn test_GetTransactionResult() {
         let expected = GetTransactionResult {
-			amount: Amount::from_btc(1.0),
+			amount: Amount::from_xvg(1.0),
 			fee: None,
 			confirmations: 30104,
 			blockhash: hash!("00000000000000039dc06adbd7666a8d1df9acf9d0329d73651b764167d63765"),
@@ -1024,7 +1024,7 @@ mod tests {
 				GetTransactionResultDetail {
 					address: addr!("mq3VuL2K63VKWkp8vvqRiJPre4h9awrHfA"),
 					category: GetTransactionResultDetailCategory::Receive,
-					amount: Amount::from_btc(1.0),
+					amount: Amount::from_xvg(1.0),
 					label: "".into(),
 					vout: 1,
 					fee: None,
@@ -1067,7 +1067,7 @@ mod tests {
         let expected = GetTxOutResult {
 			bestblock: hash!("000000000000002a1fde7234dc2bc016863f3d672af749497eb5c227421e44d5"),
 			confirmations: 29505,
-			value: Amount::from_btc(1.0),
+			value: Amount::from_xvg(1.0),
 			script_pub_key: GetRawTransactionResultVoutScriptPubKey{
 				asm: "OP_DUP OP_HASH160 687ffeffe8cf4e4c038da46a9b1d37db385a472d OP_EQUALVERIFY OP_CHECKSIG".into(),
 				hex: hex!("76a914687ffeffe8cf4e4c038da46a9b1d37db385a472d88ac"),
@@ -1106,7 +1106,7 @@ mod tests {
             vout: 1,
             address: addr!("2N56rvr9bGj862UZMNQhv57nU4GXfMof1Xu"),
             script_pub_key: script!("a914820c9a334a89cb72bc4abfce96efc1fb202cdd9087"),
-            amount: Amount::from_btc(2.0),
+            amount: Amount::from_xvg(2.0),
             confirmations: 29503,
             redeem_script: Some(script!("0014b1a84f7a5c60e58e2c6eee4b33e7585483399af0")),
             spendable: true,

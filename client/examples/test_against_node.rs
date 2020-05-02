@@ -8,12 +8,12 @@
 // If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 //
 
-//! A very simple example used as a self-test of this library against a Bitcoin
+//! A very simple example used as a self-test of this library against a Verge
 //! Core node.
-extern crate bitcoin;
-extern crate bitcoincore_rpc;
+extern crate verge;
+extern crate vergecore_rpc;
 
-use bitcoincore_rpc::{Auth, Client, Error, RpcApi};
+use vergecore_rpc::{Auth, Client, Error, RpcApi};
 
 fn main_result() -> Result<(), Error> {
     let mut args = std::env::args();
@@ -36,10 +36,10 @@ fn main_result() -> Result<(), Error> {
     println!("best block hash by height: {}", best_block_hash_by_height);
     assert_eq!(best_block_hash_by_height, best_block_hash);
 
-    let bitcoin_block: bitcoin::Block = rpc.get_by_id(&best_block_hash)?;
-    println!("best block hash by `get`: {}", bitcoin_block.header.prev_blockhash);
-    let bitcoin_tx: bitcoin::Transaction = rpc.get_by_id(&bitcoin_block.txdata[0].txid())?;
-    println!("tx by `get`: {}", bitcoin_tx.txid());
+    let verge_block: verge::Block = rpc.get_by_id(&best_block_hash)?;
+    println!("best block hash by `get`: {}", verge_block.header.prev_blockhash);
+    let verge_tx: verge::Transaction = rpc.get_by_id(&verge_block.txdata[0].txid())?;
+    println!("tx by `get`: {}", verge_tx.txid());
 
     Ok(())
 }

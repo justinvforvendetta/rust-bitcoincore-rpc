@@ -8,13 +8,13 @@
 // If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 //
 
-extern crate bitcoin;
-extern crate bitcoincore_rpc;
+extern crate verge;
+extern crate vergecore_rpc;
 extern crate jsonrpc;
 extern crate serde;
 extern crate serde_json;
 
-use bitcoincore_rpc::{Client, Error, Result, RpcApi};
+use vergecore_rpc::{Client, Error, Result, RpcApi};
 
 pub struct RetryClient {
     client: Client,

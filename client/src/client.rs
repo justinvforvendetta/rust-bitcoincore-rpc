@@ -11,16 +11,16 @@
 use std::fs::File;
 use std::result;
 
-use bitcoin;
+use verge;
 use hex;
 use jsonrpc;
 use secp256k1;
 use serde;
 use serde_json;
 
-use bitcoin::{Address, Block, BlockHeader, PrivateKey, Transaction};
-use bitcoin_amount::Amount;
-use bitcoin_hashes::sha256d;
+use verge::{Address, Block, BlockHeader, PrivateKey, Transaction};
+use verge_amount::Amount;
+use verge_hashes::sha256d;
 use log::Level::Trace;
 use num_bigint::BigUint;
 use secp256k1::{SecretKey, Signature};
@@ -135,7 +135,7 @@ pub trait RawTx: Sized {
 
 impl<'a> RawTx for &'a Transaction {
     fn raw_hex(self) -> String {
-        hex::encode(bitcoin::consensus::encode::serialize(self))
+        hex::encode(verge::consensus::encode::serialize(self))
     }
 }
 
@@ -232,7 +232,7 @@ pub trait RpcApi: Sized {
     // TODO(dpc): should we convert? Or maybe we should have two methods?
     //            just like with `getrawtransaction` it is sometimes useful
     //            to just get the string dump, without converting it into
-    //            `bitcoin` type; Maybe we should made it `Queryable` by
+    //            `verge` type; Maybe we should made it `Queryable` by
     //            `Address`!
     fn dump_priv_key(&self, address: &Address) -> Result<SecretKey> {
         let hex: String = self.call("dumpprivkey", &[address.to_string().into()])?;
@@ -256,7 +256,7 @@ pub trait RpcApi: Sized {
     fn get_block(&self, hash: &sha256d::Hash) -> Result<Block> {
         let hex: String = self.call("getblock", &[into_json(hash)?, 0.into()])?;
         let bytes = hex::decode(hex)?;
-        Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
+        Ok(verge::consensus::encode::deserialize(&bytes)?)
     }
 
     fn get_block_hex(&self, hash: &sha256d::Hash) -> Result<String> {
@@ -271,7 +271,7 @@ pub trait RpcApi: Sized {
     fn get_block_header_raw(&self, hash: &sha256d::Hash) -> Result<BlockHeader> {
         let hex: String = self.call("getblockheader", &[into_json(hash)?, false.into()])?;
         let bytes = hex::decode(hex)?;
-        Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
+        Ok(verge::consensus::encode::deserialize(&bytes)?)
     }
 
     fn get_block_header_verbose(&self, hash: &sha256d::Hash) -> Result<json::GetBlockHeaderResult> {
@@ -311,7 +311,7 @@ pub trait RpcApi: Sized {
         let mut args = [into_json(txid)?, into_json(false)?, opt_into_json(block_hash)?];
         let hex: String = self.call("getrawtransaction", handle_defaults(&mut args, &[null()]))?;
         let bytes = hex::decode(hex)?;
-        Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
+        Ok(verge::consensus::encode::deserialize(&bytes)?)
     }
 
     fn get_raw_transaction_hex(
@@ -462,7 +462,7 @@ pub trait RpcApi: Sized {
     ) -> Result<Transaction> {
         let hex: String = self.create_raw_transaction_hex(utxos, outs, locktime, replaceable)?;
         let bytes = hex::decode(hex)?;
-        Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
+        Ok(verge::consensus::encode::deserialize(&bytes)?)
     }
 
     fn fund_raw_transaction<R: RawTx>(
@@ -659,13 +659,13 @@ pub trait RpcApi: Sized {
     }
 }
 
-/// Client implements a JSON-RPC client for the Bitcoin Core daemon or compatible APIs.
+/// Client implements a JSON-RPC client for the Verge Core daemon or compatible APIs.
 pub struct Client {
     client: jsonrpc::client::Client,
 }
 
 impl Client {
-    /// Creates a client to a bitcoind JSON-RPC server.
+    /// Creates a client to a verged JSON-RPC server.
     ///
     /// Can only return [Err] when using cookie authentication.
     pub fn new(url: String, auth: Auth) -> Result<Self> {
@@ -707,14 +707,14 @@ impl RpcApi for Client {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bitcoin;
+    use verge;
     use serde_json;
 
     #[test]
     fn test_raw_tx() {
-        use bitcoin::consensus::encode;
+        use verge::consensus::encode;
         let client = Client::new("http://localhost/".into(), Auth::None).unwrap();
-        let tx: bitcoin::Transaction = encode::deserialize(&hex::decode("0200000001586bd02815cf5faabfec986a4e50d25dbee089bd2758621e61c5fab06c334af0000000006b483045022100e85425f6d7c589972ee061413bcf08dc8c8e589ce37b217535a42af924f0e4d602205c9ba9cb14ef15513c9d946fa1c4b797883e748e8c32171bdf6166583946e35c012103dae30a4d7870cd87b45dd53e6012f71318fdd059c1c2623b8cc73f8af287bb2dfeffffff021dc4260c010000001976a914f602e88b2b5901d8aab15ebe4a97cf92ec6e03b388ac00e1f505000000001976a914687ffeffe8cf4e4c038da46a9b1d37db385a472d88acfd211500").unwrap()).unwrap();
+        let tx: verge::Transaction = encode::deserialize(&hex::decode("0200000001586bd02815cf5faabfec986a4e50d25dbee089bd2758621e61c5fab06c334af0000000006b483045022100e85425f6d7c589972ee061413bcf08dc8c8e589ce37b217535a42af924f0e4d602205c9ba9cb14ef15513c9d946fa1c4b797883e748e8c32171bdf6166583946e35c012103dae30a4d7870cd87b45dd53e6012f71318fdd059c1c2623b8cc73f8af287bb2dfeffffff021dc4260c010000001976a914f602e88b2b5901d8aab15ebe4a97cf92ec6e03b388ac00e1f505000000001976a914687ffeffe8cf4e4c038da46a9b1d37db385a472d88acfd211500").unwrap()).unwrap();
 
         assert!(client.send_raw_transaction(&tx).is_err());
         assert!(client.send_raw_transaction(&encode::serialize(&tx)).is_err());

@@ -1,7 +1,7 @@
-bitcoincore-rpc-json
+vergecore-rpc-json
 ====================
 
-A collection of JSON-enabled data types used in the `bitcoincore-rpc` crate.
+A collection of JSON-enabled data types used in the `vergecore-rpc` crate.
 
 # License
 

@@ -1,5 +1,5 @@
 [package]
-name = "bitcoincore-rpc"
+name = "vergecore-rpc"
 version = "0.6.0"
 authors = [
     "Steven Roose <steven@stevenroose.org>",
@@ -7,18 +7,18 @@ authors = [
     "Dawid Ciężarkiewicz <dpc@dpc.pw>"
 ]
 license = "CC0-1.0"
-homepage = "https://github.com/rust-bitcoin/rust-bitcoincore-rpc/"
-repository = "https://github.com/rust-bitcoin/rust-bitcoincore-rpc/"
-description = "RPC client library for the Bitcoin Core JSON-RPC API."
-keywords = [ "crypto", "bitcoin", "bitcoin-core", "rpc" ]
+homepage = "https://github.com/rust-verge/rust-vergecore-rpc/"
+repository = "https://github.com/rust-verge/rust-vergecore-rpc/"
+description = "RPC client library for the Verge Core JSON-RPC API."
+keywords = [ "crypto", "verge", "verge-core", "rpc" ]
 readme = "README.md"
 
 [lib]
-name = "bitcoincore_rpc"
+name = "vergecore_rpc"
 path = "src/lib.rs"
 
 [dependencies]
-bitcoincore-rpc-json = { version = "0.6.0", path = "../json" }
+vergecore-rpc-json = { version = "0.6.0", path = "../json" }
 
 log = "0.4.5"
 jsonrpc = "0.11"
@@ -28,9 +28,9 @@ serde = "1"
 serde_json = "1"
 hex = "0.3"
 
-# Used for Bitcoin-specific types.
-bitcoin = { version = "0.18", features = [ "serde-decimal" ] }
-bitcoin_hashes = "0.3"
-bitcoin-amount = { version = "0.1.4", features = [ "serde" ] }
+# Used for Verge-specific types.
+verge = { version = "0.18", features = [ "serde-decimal" ] }
+verge_hashes = "0.3"
+verge-amount = { version = "0.1.4", features = [ "serde" ] }
 secp256k1 = { version = "0.12", features = [ "serde" ] }
 num-bigint = { version = "0.2", features = [ "serde" ] }

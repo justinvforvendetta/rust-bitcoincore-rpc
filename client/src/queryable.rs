@@ -8,14 +8,14 @@
 // If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 //
 
-use bitcoin;
+use verge;
 use serde_json;
 
-use bitcoin_hashes::sha256d;
+use verge_hashes::sha256d;
 use client::Result;
 use client::RpcApi;
 
-/// A type that can be queried from Bitcoin Core.
+/// A type that can be queried from Verge Core.
 pub trait Queryable<C: RpcApi>: Sized {
     /// Type of the ID used to query the item.
     type Id;
@@ -23,30 +23,30 @@ pub trait Queryable<C: RpcApi>: Sized {
     fn query(rpc: &C, id: &Self::Id) -> Result<Self>;
 }
 
-impl<C: RpcApi> Queryable<C> for bitcoin::blockdata::block::Block {
+impl<C: RpcApi> Queryable<C> for verge::blockdata::block::Block {
     type Id = sha256d::Hash;
 
     fn query(rpc: &C, id: &Self::Id) -> Result<Self> {
         let rpc_name = "getblock";
         let hex: String = rpc.call(rpc_name, &[serde_json::to_value(id)?, 0.into()])?;
-        let bytes = bitcoin::util::misc::hex_bytes(&hex)?;
-        Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
+        let bytes = verge::util::misc::hex_bytes(&hex)?;
+        Ok(verge::consensus::encode::deserialize(&bytes)?)
     }
 }
 
-impl<C: RpcApi> Queryable<C> for bitcoin::blockdata::transaction::Transaction {
+impl<C: RpcApi> Queryable<C> for verge::blockdata::transaction::Transaction {
     type Id = sha256d::Hash;
 
     fn query(rpc: &C, id: &Self::Id) -> Result<Self> {
         let rpc_name = "getrawtransaction";
         let hex: String = rpc.call(rpc_name, &[serde_json::to_value(id)?])?;
-        let bytes = bitcoin::util::misc::hex_bytes(&hex)?;
-        Ok(bitcoin::consensus::encode::deserialize(&bytes)?)
+        let bytes = verge::util::misc::hex_bytes(&hex)?;
+        Ok(verge::consensus::encode::deserialize(&bytes)?)
     }
 }
 
 impl<C: RpcApi> Queryable<C> for Option<::json::GetTxOutResult> {
-    type Id = bitcoin::OutPoint;
+    type Id = verge::OutPoint;
 
     fn query(rpc: &C, id: &Self::Id) -> Result<Self> {
         rpc.get_tx_out(&id.txid, id.vout, Some(true))
