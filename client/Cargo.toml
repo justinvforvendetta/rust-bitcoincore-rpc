@@ -18,7 +18,7 @@ name = "rust_vergecore_rpc"
 path = "src/lib.rs"
 
 [dependencies]
-bitcoincore-rpc-json = { version = "0.6.0", path = "../json" }
+vergecore-rpc-json = { version = "0.6.0", path = "../json" }
 
 log = "0.4.5"
 jsonrpc = "0.11"
