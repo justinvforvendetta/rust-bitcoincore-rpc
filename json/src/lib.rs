@@ -16,9 +16,9 @@
 #![crate_name = "vergecore_rpc_json"]
 #![crate_type = "rlib"]
 
-extern crate verge;
-extern crate verge_amount;
-extern crate verge_hashes;
+extern crate bitcoin;
+extern crate bitcoin_amount;
+extern crate bitcoin_hashes;
 extern crate hex;
 extern crate num_bigint;
 extern crate secp256k1;
@@ -29,10 +29,10 @@ extern crate serde_json;
 
 use std::str::FromStr;
 
-use verge::consensus::encode;
-use verge::{Address, Script, Transaction};
-use verge_amount::Amount;
-use verge_hashes::sha256d;
+use bitcoin::consensus::encode;
+use bitcoin::{Address, Script, Transaction};
+use bitcoin_amount::Amount;
+use bitcoin_hashes::sha256d;
 use num_bigint::BigUint;
 use secp256k1::PublicKey;
 use serde::de::Error as SerdeError;
@@ -395,7 +395,7 @@ pub struct TestMempoolAccept {
 /// Models the result of "getblockchaininfo"
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GetBlockchainInfoResult {
-    // TODO: Use Network from rust-verge
+    // TODO: Use Network from rust-bitcoin
     /// Current network name as defined in BIP70 (main, test, regtest)
     pub chain: String,
     /// The current number of blocks processed in the server
@@ -546,12 +546,12 @@ pub enum EstimateMode {
     Conservative,
 }
 
-/// A wrapper around verge::SigHashType that will be serialized
+/// A wrapper around bitcoin::SigHashType that will be serialized
 /// according to what the RPC expects.
-pub struct SigHashType(verge::SigHashType);
+pub struct SigHashType(bitcoin::SigHashType);
 
-impl From<verge::SigHashType> for SigHashType {
-    fn from(sht: verge::SigHashType) -> SigHashType {
+impl From<bitcoin::SigHashType> for SigHashType {
+    fn from(sht: bitcoin::SigHashType) -> SigHashType {
         SigHashType(sht)
     }
 }
@@ -562,12 +562,12 @@ impl serde::Serialize for SigHashType {
         S: serde::Serializer,
     {
         serializer.serialize_str(match self.0 {
-            verge::SigHashType::All => "ALL",
-            verge::SigHashType::None => "NONE",
-            verge::SigHashType::Single => "SINGLE",
-            verge::SigHashType::AllPlusAnyoneCanPay => "ALL|ANYONECANPAY",
-            verge::SigHashType::NonePlusAnyoneCanPay => "NONE|ANYONECANPAY",
-            verge::SigHashType::SinglePlusAnyoneCanPay => "SINGLE|ANYONECANPAY",
+            bitcoin::SigHashType::All => "ALL",
+            bitcoin::SigHashType::None => "NONE",
+            bitcoin::SigHashType::Single => "SINGLE",
+            bitcoin::SigHashType::AllPlusAnyoneCanPay => "ALL|ANYONECANPAY",
+            bitcoin::SigHashType::NonePlusAnyoneCanPay => "NONE|ANYONECANPAY",
+            bitcoin::SigHashType::SinglePlusAnyoneCanPay => "SINGLE|ANYONECANPAY",
         })
     }
 }
@@ -717,7 +717,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use verge_hashes::hex::FromHex;
+    use bitcoin_hashes::hex::FromHex;
     use serde_json;
 
     macro_rules! hex {

@@ -18,9 +18,9 @@
 
 #[macro_use]
 extern crate log;
-extern crate verge;
-extern crate verge_amount;
-extern crate verge_hashes;
+extern crate bitcoin;
+extern crate bitcoin_amount;
+extern crate bitcoin_hashes;
 extern crate hex;
 extern crate jsonrpc;
 extern crate num_bigint;
@@ -28,8 +28,8 @@ extern crate secp256k1;
 extern crate serde;
 extern crate serde_json;
 
-pub extern crate vergecore_rpc_json;
-pub use vergecore_rpc_json as json;
+pub extern crate bitcoincore_rpc_json;
+pub use bitcoincore_rpc_json as json;
 
 mod client;
 mod error;
