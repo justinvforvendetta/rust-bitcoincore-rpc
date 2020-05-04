@@ -1,5 +1,5 @@
 [package]
-name = "vergecore-rpc"
+name = "rust-vergecore-rpc"
 version = "0.6.0"
 authors = [
     "Steven Roose <steven@stevenroose.org>",
@@ -7,14 +7,14 @@ authors = [
     "Dawid Ciężarkiewicz <dpc@dpc.pw>"
 ]
 license = "CC0-1.0"
-homepage = "https://github.com/rust-verge/rust-vergecore-rpc/"
-repository = "https://github.com/rust-verge/rust-vergecore-rpc/"
+homepage = "https://github.com/justinvforvendetta/rust-vergecore-rpc/"
+repository = "https://github.com/justinvforvendetta/rust-vergecore-rpc/"
 description = "RPC client library for the Verge Core JSON-RPC API."
 keywords = [ "crypto", "verge", "verge-core", "rpc" ]
 readme = "README.md"
 
 [lib]
-name = "vergecore_rpc"
+name = "rust_vergecore_rpc"
 path = "src/lib.rs"
 
 [dependencies]
